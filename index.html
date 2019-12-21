@@ -43,34 +43,58 @@
           yzoom = 1;
         var zerox = 100,
           zeroy = 100;
-        var prev = [];
+        var prev = [zerox, 600 -zeroy];
         this.add.image(400, 300, "sky");
-        var lines = this.add.group();
-        var points = this.add.group();
+
         this.add
-          .line(
-            0,
-            0,
-            0,
-            600 - zeroy,
-            800,
-            600 -zeroy,
-            RGBToHEX(0, 0, 0)
-          )
+          .line(0, 0, 0, 600 - zeroy, 800, 600 - zeroy, RGBToHEX(0, 0, 0))
           .setOrigin(0, 0);
         this.add
-          .line(
-            0,
-            0,
-            zerox,
-            600,
-            zerox,
-            0,
-            RGBToHEX(0, 0, 0)
-          )
+          .line(0, 0, zerox, 600, zerox, 0, RGBToHEX(0, 0, 0))
           .setOrigin(0, 0);
-        for (let i = 0; quadratic(-16, i, 150, 0) >= 0 || i < 1; i += 0.2) {
+
+        var max = 0;
+        var i = 20;
+        var ball = this.add
+          .image(zerox, 600 - zeroy, "star")
+          .setDisplaySize(20, 20)
+          .setInteractive();
+        var timeline = this.tweens.createTimeline();
+        var acc = 0.05
+        for (let i = 0; quadratic(-16, i, 150, 0) >= 0 || i < 1; i += acc) {
           var quad = quadratic(-16, i, 150, 0);
+          timeline.add({
+            targets: ball,
+            duration: 1000 * acc,
+            x: i * xzoom + zerox,
+            y: 600 - zeroy - quad * yzoom
+          });
+          this.add
+            .line(
+              0,
+              0,
+              prev[0],
+              prev[1],
+              i * xzoom + zerox,
+              600 - zeroy - quad * yzoom,
+              RGBToHEX(0,200,0)
+            )
+            .setOrigin(0, 0);
+          prev[0] = i * xzoom + zerox;
+          prev[1] = 600 - zeroy - quad * yzoom;
+        }
+        timeline.play();
+        ball.on("pointerdown", function() {
+          console.log("click");
+          timeline.play();
+        });
+        /*var lines = this.add.group();
+        var points = this.add.group();
+        for (let i = 0; quadratic(-16, i - 1, 150, 0) >= 0 || i < 1; i += 0.2) {
+          var quad = quadratic(-16, i, 150, 0);
+          if (quad > max){
+            max = quad
+          }
           console.log(i + " // " + quad);
           if (prev.length == 2) {
             lines.add(
@@ -94,12 +118,11 @@
             this.add
               .image(i * xzoom + zerox, 600 - zeroy - quad * yzoom, "star")
               .setDisplaySize(10, 10)
-              .setZ(20)
           );
 
           prev[0] = i * xzoom + zerox;
           prev[1] = 600 - zeroy - quad * yzoom;
-        }
+        }*/
       }
       function update() {}
       function quadratic(gravity, time, initVelo, initHeight) {
@@ -113,3 +136,4 @@
     </script>
   </body>
 </html>
+t
